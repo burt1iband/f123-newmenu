@@ -1,0 +1,203 @@
+#!/bin/bash
+## F123newmenu generates a categorized graphical applications menu to be used with
+## the nautilus filemanager in gnome shell for the F123 Linux distribution.
+## f123newmenu is released under the terms of the GNU general public license version 3,
+## and may be redistributed under the terms of this license or optionaly any later version of the GPL
+## For a copy of the license go to http://fsf.org/    
+
+     
+copy(){
+	if [ -z "$(grep NoDisplay=true "$1")" ]
+	then
+		cp "$1" "$2"
+	fi
+}
+
+source /etc/f123box.conf
+
+# Extract the base language from the group ID
+language=${group:0:2}
+
+root="/tmp/menus"
+
+mkdir -p $root
+
+folder=Accessories
+case $language in
+     pt) folder="Acess�rios" ;;
+     es) folder="Accesorios" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Utility | grep -v Accessibility | grep -v X-Xfce-Toplevel | cut -d: -f1)
+do
+     copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder="Universal Access"
+case $language in
+	pt) folder="Acesso universal" ;;
+	es) folder="Acceso universal" ;;
+esac
+mkdir -p $root/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Accessibility | grep -v Settings | cut -d: -f1)
+do
+	copy $f $root/"$folder"
+done
+chmod +x -R $root/"$folder"
+
+folder=Development
+case $language in
+     pt) folder="Desenvolvimento" ;;
+     es) folder="Desaroyo" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | egrep 'Development|WebDevelopment' | cut -d: -f1)
+do
+     copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=Games
+case $language in
+     pt) folder="Jogos" ;;
+     es) folder="Juegos" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | egrep 'Game|ArcadeGame|BoardGame' | cut -d: -f1)
+do
+     copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+  
+folder=Graphics
+case $language in
+	pt) folder="Gráficos" ;;
+	es) folder="Gráficos" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Graphics | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=Internet
+case $language in
+	pt) folder="Internet" ;;
+	es) folder="Internet" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Network | grep -v X-GNOME-WebApplication | grep -v X-Xfce-Toplevel | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=Multimedia
+case $language in
+	pt) folder="Multimídia" ;;
+	es) folder="Sonido y vídeo" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep AudioVideo | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=Office
+case $language in
+	pt) folder="Escritório" ;;
+	es) folder="Oficina" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Office | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=System
+case $language in
+	pt) folder="Ferramenta de sistema" ;;
+	es) folder="Herramientas del sistema" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep System | grep -v Settings | grep -v FileManager | grep -v Game | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=Preferences
+case $language in
+	pt) folder="Preferências" ;;
+	es) folder="Preferencias" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Settings | grep -v System | grep -v X-GNOME-Settings-Panel | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+folder=Administration
+case $language in
+	pt) folder="Administração" ;;
+	es) folder="Administración" ;;
+esac
+mkdir -p "$root"/"$folder"
+for f in $(grep Categories -R /usr/share/applications/ | grep Settings | grep System | grep -v X-GNOME-Settings-Panel | cut -d: -f1)
+do
+	copy $f "$root"/"$folder"
+done
+chmod +x -R "$root"/"$folder"
+
+## Screenreader Config Command
+#
+name="Configure Screenreader"
+case $language in
+     pt) name="Configurar Orca" ;;
+     es) name="Configurar Lector de Pantalla" ;;
+esac
+mkdir -p "$root"
+echo -e "[Desktop Entry]\nName=$name\nExec=orca -s\nType=Application" > "$root/orca-config.desktop"
+chmod +x "$root/orca-config.desktop"
+
+## Turn monitor on and off
+name="Monitor Toggle"
+case $language in
+     pt) name="Apague e Acende Tela" ;;
+     es) name="Apagar y Encender Pantalla" ;;
+esac
+mkdir -p "$root"
+echo -e "[Desktop Entry]\nName=$name\nExec=monitor-toggle\nType=Application" > "$root/monitor-toggle.desktop"
+chmod +x "$root/monitor-toggle.desktop"
+  
+# shutdown and restart commands
+#
+name="Restart Computer"
+case $language in
+	pt) name="Reinicializar Computador" ;;
+	es) name="Reiniciar Computador" ;;
+esac
+mkdir -p "$root"
+echo -e "[Desktop Entry]\nName=$name\nExec=systemctl reboot\nType=Application" > "$root/reboot.desktop"
+chmod +x "$root/reboot.desktop"
+
+name="Shutdown Computer"
+case $language in
+	pt) name="Desligar Computador" ;;
+	es) name="Apagar Computador" ;;
+esac
+mkdir -p "$root"
+echo -e "[Desktop Entry]\nName=$name\nExec=systemctl poweroff\nType=Application" > "$root/poweroff.desktop"
+chmod +x "$root/poweroff.desktop"
+
+# Display the menu if a GUI is running
+if [ -n $DISPLAY ]; then
+	nautilus "$root"
+else
+	echo Menu updated.
+fi
