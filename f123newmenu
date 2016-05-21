@@ -181,7 +181,7 @@ echo -e "[Desktop Entry]\nName=$name\nExec=monitor-toggle\nType=Application" > "
 chmod +x "$root/monitor-toggle.desktop"
 
 ## Logout of Xsession
-## Are we using mate, if not logout of gnome session.
+## Are we using mate, if not assume gnome when setting logout command.
 Ms="$(pgrep mate-session)"
      if [ -n "$Ms" ]; then
 LOcmd="mate-session-save --logout-dialog"
